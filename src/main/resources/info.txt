@@ -1,0 +1,67 @@
+// Endpoints
+
+viewRooms
+    -> Data
+        -- NONE
+    -> Return
+        -- List of rooms
+
+joinRoom
+    -> Data
+        -- roomName
+        -- viewerName
+    -> Return
+        -- Status Message
+
+currentRoomMates
+    -> Data
+        -- roomName
+    -> Return
+        -- List of roommates
+
+leaveRoom
+    -> Data
+        -- roomName
+        -- viewerName
+    -> Return
+        -- Status Message
+
+
+sendMessage
+    -> Data
+        -- roomName
+        -- viewerName
+        -- message
+    -> Return
+        -- Status + Updated view
+
+
+
+*****
+
+Status Message:
+{
+    statusCode: "",
+    statusDescription: "",
+    time: ""
+}
+
+
+Incoming Message / Request:
+{
+    action: "...available actions...",
+    roomName: "",
+    *message: {
+        from: "",
+        text: "",
+        time: ""
+    }
+}
+
+Join Room:
+{
+    action: "joinRoom",
+    name: ""
+}
+
+*****
