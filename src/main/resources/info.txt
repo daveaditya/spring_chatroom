@@ -53,7 +53,7 @@ Incoming Message / Request:
     roomName: "",
     *message: {
         from: "",
-        text: "",
+        message: "",
         time: ""
     }
 }

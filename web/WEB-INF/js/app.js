@@ -2,7 +2,8 @@ var contextPath;
 var roomName;
 var subscribeTo;
 var nickname;
-var stompClient;
+var sessionId;
+var webSocket;
 
 
 /**
@@ -13,52 +14,28 @@ function signIn() {
     var error = false;
 
     nickname = document.getElementById('nickname').value;
-    if(nickname.trim() === 0) {
-        $('#nickname').css({ "border": '#FF0000 1px solid'});
+    if (nickname.trim() === 0) {
+        $('#nickname').css({"border": '#FF0000 1px solid'});
         error = true;
     }
 
     roomName = document.getElementById('roomname').value;
-    if(roomName === "") {
-        $('#roomname').css({ "border": '#FF0000 1px solid'});
+    if (roomName === "") {
+        $('#roomname').css({"border": '#FF0000 1px solid'});
         error = true;
-    } else if(roomName === 'other') {
+    } else if (roomName === 'other') {
         roomName = document.getElementById('newroomname').value;
-        if(roomName.trim().length === 0) {
-            $('#newroomname').css({ "border": '#FF0000 1px solid'});
+        if (roomName.trim().length === 0) {
+            $('#newroomname').css({"border": '#FF0000 1px solid'});
             error = true;
         }
     }
 
-    if(!error) {
+    if (!error) {
         subscribeTo = "/" + roomName + "/messages";
-/*        var requestToSend = JSON.stringify({
-            request: {
-                nickname: nickname,
-                roomname: roomName
-            }
-        });*/
         $('#nickname').css("all: initial;");
         $('#roomname').css("all: initial;");
         $('#newroomname').css("all: initial;");
-        /*$.ajax({
-            url: contextPath + "/",
-            method: "post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: requestToSend,
-            success: function(jsonResponse) {
-                if(jsonResponse.responseCode === 200) {
-                    $('#inroomname').html(roomName);
-                    connect();
-                } else {
-                    alert("Error: " + jsonResponse.responseDesc);
-                }
-            },
-            error: function() {
-                alert("Server side error occurred...!");
-            }
-        });*/
         connect();
     }
 }
@@ -68,30 +45,82 @@ function signIn() {
  * Create connection to the room and subscribe for messages.
  */
 function connect() {
-    var socket = new SockJS(contextPath + "/app/chat");
-    stompClient = Stomp.over(socket);
 
-    $.ajax({
-        url: "ws://" + contextPath + "/app/path",
-        data: {
-            request: {
+    webSocket = new WebSocket("ws://localhost:8080/app/chat");
+
+    webSocket.onopen = function (event) {
+        if (event === undefined) {
+            return;
+        }
+
+        if (webSocket.readyState === 1) {
+            var requestToSend = JSON.stringify({
                 action: "joinRoom",
                 roomName: roomName,
                 nickName: nickname,
+                sessionId: sessionId,
                 message: null
-            }
-        },
-        success: function(response) {
-            if(response.responseCode === 200) {
-                onConnected();
-            } else {
-                alert("Server error...!");
-            }
-        },
-        error: function() {
-            alert("Server error...!");
+            });
+            console.log("SENDING: " + requestToSend);
+            webSocket.send(requestToSend);
         }
-    })
+    };
+
+    webSocket.onclose = function () {
+        console.log("SERVER CLOSED CONNECTION ...");
+        pageLoad(contextPath);
+    };
+
+    webSocket.onmessage = function (msg) {
+
+        console.log("GOT ... " + msg.data + " ||| type ... " + typeof msg.data);
+        var response = JSON.parse(msg.data);
+        // Handling based on Response Code
+
+        // 200 - JOINED SUCCESSFULLY
+        if (response.responseCode === 200) {
+            sessionId = response.sessionId;
+            console.log("CONNECTED : SESSION ... " + sessionId);
+            onConnected();
+
+            // 201 - JOIN FAILED - Todo
+        } else if (response.responseCode === 201) {
+            alert("Cannot join the specified room.");
+
+            // 202 - Someone Joined
+        } else if (response.responseCode === 202) {
+            showMessage(response);
+
+            // 203 - Left Successfully 'Viewer left room'
+        } else if (response.responseCode === 203) {
+            pageLoad(contextPath);
+
+            // 204 - Left failed - Todo
+        } else if (response.responseCode === 204) {
+            alert("Cannot leave room!");
+
+            // 205 - Someone has left the room
+        } else if (response.responseCode === 205) {
+            showMessage(response);
+
+            // 210 - Message Received 'by server'
+        } else if (response.responseCode === 210) {
+            showMessage(response);
+
+            // 211 - Message Forwarded 'Message available in room'
+        } else if (response.responseCode === 211) {
+            showMessage(response);
+
+        } else {
+            console.log("UNDEFINED -- GOT: ... " + msg.data);
+        }
+
+    };
+
+    webSocket.onerror = function (event) {
+        console.log("ERROR: " + event.data);
+    }
+
 }
 
 
@@ -101,6 +130,7 @@ function connect() {
 function onConnected() {
     $('#signin').hide();
     $('#chatbox').show();
+    $('#inroomname').text(roomName);
 }
 
 
@@ -112,25 +142,27 @@ function sendMessage() {
     var error = false;
     var msg = document.getElementById('message').value;
 
-    if(msg.trim().length === 0) {
-        $('#message').css({ "border": '#FF0000 1px solid'});
+    if (msg.trim().length === 0) {
+        $('#message').css({"border": '#FF0000 1px solid'});
         error = true;
+    } else {
+        $('#message').css({"border": 'initial'});
     }
 
-    if(!error) {
+    if (!error) {
         $('#message').css("all: initial;");
-        var msgToSend = {
-            request: {
-                action: "sendMessage",
-                roomName: roomName,
-                message: {
-                    from: nickname,
-                    message: msg,
-                    time: Date.now()
-                }
+        var msgToSend = JSON.stringify({
+            action: "sendMessage",
+            roomName: roomName,
+            sessionId: sessionId,
+            message: {
+                from: nickname,
+                message: msg,
+                time: Date.now()
             }
-        };
-        stompClient.send("/app/chat/", {}, JSON.stringify(msgToSend));
+        });
+        console.log("SENDING: " + msgToSend);
+        webSocket.send(msgToSend);
     }
 
 }
@@ -141,11 +173,12 @@ function sendMessage() {
  * @param jsonResponse json object containing message to display
  */
 function showMessage(jsonResponse) {
-    console.log("Got: " + JSON.stringify(jsonResponse));
     var msg = jsonResponse.message;
-    var newMsgDiv = document.createElement('div');
-    newMsgDiv.appendChild(document.createTextNode(msg.from + " " + msg.message + " " + msg.time));
-    document.getElementById("messagebox").appendChild(newMsgDiv);
+    if (msg.from === roomName) {
+        $('#messagebox').append("<span style='display: inline-block;'>" + msg.from + ": " + msg.message + " " + msg.time + "</span><br>");
+    } else {
+        $('#messagebox').append("<div style='text-align: left;'>" + msg.from + ": " + msg.message + " " + msg.time + "</div>");
+    }
 }
 
 
@@ -155,7 +188,7 @@ function showMessage(jsonResponse) {
  * @param value if 'other' selected enable input
  */
 function showInputIfOther(value) {
-    if(value === "other") {
+    if (value === "other") {
         $('#inputnewroom').show();
     } else {
         $('#inputnewroom').hide();
@@ -172,6 +205,8 @@ function pageLoad(path) {
     $('#signin').show();
     $('#inputnewroom').hide();
     $('#chatbox').hide();
+    $('#messagebox').empty();
+    $('#inroomname').empty();
     $('#nickname').val('');
     $('#roomname')[0].selectedIndex = 0;
     $('#newroomname').val('');
@@ -183,8 +218,15 @@ function pageLoad(path) {
  * Disconnect the subscriber and reinitialize the components
  */
 function disconnect() {
-    if(stompClient !== undefined) {
-        stompClient.disconnect();
+    if (webSocket !== undefined) {
+        var exitRequest = JSON.stringify({
+            action: "leaveRoom",
+            roomName: roomName,
+            nickName: nickname,
+            sessionId: sessionId,
+            message: null
+        });
+        console.log("SENDING: " + exitRequest);
+        webSocket.send(exitRequest);
     }
-    pageLoad(contextPath);
 }

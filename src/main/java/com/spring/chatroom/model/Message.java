@@ -1,18 +1,20 @@
 package com.spring.chatroom.model;
 
+
+@SuppressWarnings({"unused"})
 public class Message {
 
     private String from;
 
-    private String text;
+    private String message;
 
     private String time;
 
     public Message() { }
 
-    public Message(String from, String text, String time) {
+    public Message(String from, String message, String time) {
         this.from = from;
-        this.text = text;
+        this.message = message;
         this.time = time;
     }
 
@@ -24,12 +26,12 @@ public class Message {
         this.from = from;
     }
 
-    public String getText() {
-        return text;
+    public String getMessage() {
+        return message;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getTime() {
@@ -44,7 +46,7 @@ public class Message {
     public String toString() {
         return "Message{" +
                 "from='" + from + '\'' +
-                ", text='" + text + '\'' +
+                ", message='" + message + '\'' +
                 ", time='" + time + '\'' +
                 '}';
     }

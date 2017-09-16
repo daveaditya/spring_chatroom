@@ -4,12 +4,14 @@ import com.spring.chatroom.handler.ActionHandler;
 import com.spring.chatroom.topic.RoomManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 
+@Controller
 @Configuration
 @EnableWebSocket
 public class MySocketConfigurer implements WebSocketConfigurer {

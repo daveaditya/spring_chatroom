@@ -48,9 +48,8 @@
         Welcome to, <span id="inroomname"></span><span style="float: right"><a id="disconnect" onclick="disconnect()">Disconnect</a></span>
         <br><br>
 
-        <div id="messagebox" style="height: 80%; padding: 10px; margin-bottom: 10px; overflow: auto; border: dotted #999999 2px">
-            <div id="samplemessage">Name ... Text ... 12:43</div>
-        </div>
+        <div id="messagebox"
+             style="height: 80%; text-align: center; padding: 10px; margin-bottom: 10px; overflow: auto; border: dotted #999999 2px"></div>
 
         <div id="sendmessage" style="border: dotted blanchedalmond 2px; height: 15%; width: 100%">
             <input id="message" name="message" class="validate" placeholder="Enter message to send..." style="width: 90%; height: 100px; border: 1px solid #999999; padding: 5px;">

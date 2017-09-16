@@ -10,6 +10,8 @@ public class Request {
 
     private String nickName;
 
+    private String sessionId;
+
     private Message message;
 
     public String getAction() {
@@ -36,6 +38,14 @@ public class Request {
         this.nickName = nickName;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
     public Message getMessage() {
         return message;
     }
@@ -50,6 +60,7 @@ public class Request {
                 "action='" + action + '\'' +
                 ", roomName='" + roomName + '\'' +
                 ", nickName='" + nickName + '\'' +
+                ", sessionId='" + sessionId + '\'' +
                 ", message=" + message +
                 '}';
     }

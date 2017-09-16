@@ -115,11 +115,11 @@
 
 
         <!-- Glassfish tyrus version -->
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-client</artifactId>
-            <version>${glassfish-tyrus.version}</version>
-        </dependency>
+        <!--        <dependency>
+                    <groupId>org.glassfish.tyrus</groupId>
+                    <artifactId>tyrus-client</artifactId>
+                    <version>${glassfish-tyrus.version}</version>
+                </dependency>-->
 
 
         <!-- JUnit Testing library -->

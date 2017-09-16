@@ -1,6 +1,5 @@
 package com.spring.chatroom.topic;
 
-import com.spring.chatroom.model.Response;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -9,7 +8,7 @@ import java.io.IOException;
 
 // Represents a single person's session
 @SuppressWarnings({"WeakerAccess"})
-public class Viewer {
+public class Viewer implements AutoCloseable {
 
     private String viewerName;
     private WebSocketSession wbSession;
@@ -39,8 +38,17 @@ public class Viewer {
         this.wbSession = wbSession;
     }
 
-    public void sendMessage(Response response) throws IOException {
-        this.wbSession.sendMessage(new TextMessage(response.toString()));
+    public void sendMessage(String msg) throws IOException {
+        this.wbSession.sendMessage(new TextMessage(msg));
+    }
+
+    @Override
+    public void close() {
+        try {
+            this.wbSession.close();
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
     }
 
 }

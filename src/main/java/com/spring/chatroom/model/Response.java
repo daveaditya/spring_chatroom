@@ -1,14 +1,12 @@
 package com.spring.chatroom.model;
 
-/*
-200 - JOINED SUCCESSFULLY
-201 - OK
- */
 
+@SuppressWarnings({"unused"})
 public class Response {
 
     private int responseCode;
     private String responseDesc;
+    private String sessionId;
     private Message message;
 
     public int getResponseCode() {
@@ -27,6 +25,14 @@ public class Response {
         this.responseDesc = responseDesc;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
     public Message getMessage() {
         return message;
     }
@@ -40,6 +46,7 @@ public class Response {
         return "Response{" +
                 "responseCode=" + responseCode +
                 ", responseDesc='" + responseDesc + '\'' +
+                ", sessionId='" + sessionId + '\'' +
                 ", message=" + message +
                 '}';
     }
