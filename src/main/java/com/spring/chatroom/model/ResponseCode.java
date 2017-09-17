@@ -1,4 +1,4 @@
-package com.spring.chatroom.utils;
+package com.spring.chatroom.model;
 
 
 @SuppressWarnings({"unused"})

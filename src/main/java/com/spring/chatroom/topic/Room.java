@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spring.chatroom.model.Message;
 import com.spring.chatroom.model.Response;
-import com.spring.chatroom.utils.ResponseCode;
+import com.spring.chatroom.model.ResponseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -52,7 +52,8 @@
              style="height: 80%; text-align: center; padding: 10px; margin-bottom: 10px; overflow: auto; border: dotted #999999 2px"></div>
 
         <div id="sendmessage" style="border: dotted blanchedalmond 2px; height: 15%; width: 100%">
-            <input id="message" name="message" class="validate" placeholder="Enter message to send..." style="width: 90%; height: 100px; border: 1px solid #999999; padding: 5px;">
+            <input id="message" name="message" placeholder="Enter message to send..."
+                   style="width: 90%; height: 100px; border: 1px solid #999999; padding: 5px; background-color: gainsboro;">
             <button type="button" onclick="return sendMessage();" style="height: 100px; width: 9%; margin: 2px;">Send</button>
         </div>
 

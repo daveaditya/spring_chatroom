@@ -17,6 +17,8 @@ function signIn() {
     if (nickname.trim() === 0) {
         $('#nickname').css({"border": '#FF0000 1px solid'});
         error = true;
+    } else {
+        $('#nickname').css({"border": 'initial'});
     }
 
     roomName = document.getElementById('roomname').value;
@@ -28,7 +30,11 @@ function signIn() {
         if (roomName.trim().length === 0) {
             $('#newroomname').css({"border": '#FF0000 1px solid'});
             error = true;
+        } else {
+            $('#newroomname').css({"border": 'initial'});
         }
+    } else {
+        $('#roomname').css({"border": 'initial'});
     }
 
     if (!error) {
