@@ -1,14 +1,8 @@
 package com.spring.chatroom.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-
-
 /*@Configuration
 @EnableWebSocketMessageBroker*/
+/*
 @SuppressWarnings({"unused"})
 public class MyMessageBrokerConfigurer extends AbstractWebSocketMessageBrokerConfigurer {
 
@@ -26,4 +20,4 @@ public class MyMessageBrokerConfigurer extends AbstractWebSocketMessageBrokerCon
         stompEndpointRegistry.addEndpoint("/chat").setAllowedOrigins("*").withSockJS();
     }
 
-}
+}*/

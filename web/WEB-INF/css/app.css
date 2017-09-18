@@ -1,0 +1,64 @@
+.roomMsg {
+    display: inline-block;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+.container {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    width: 80%;
+    float: left;
+}
+
+/* Display box on right when the message to be displayed is by current user */
+.my-container {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    width: 80%;
+    float: right;
+}
+
+.from {
+    padding-bottom: 8px;
+    font-weight: bold;
+    font-family: sans-serif;
+    float: left;
+}
+
+/* Display name on right side when box belongs to current user */
+.my-from {
+    padding-bottom: 8px;
+    font-weight: bold;
+    font-family: sans-serif;
+    display: none;
+}
+
+.msg {
+    height: 50px;
+    border-radius: 4px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    padding-left: 15px;
+    padding-top: 10px;
+    text-align: left;
+    background-color: bisque;
+}
+
+/* Display green box when the text to be displayed is from current user */
+.my-msg {
+    height: 50px;
+    border-radius: 4px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    padding-left: 15px;
+    padding-top: 10px;
+    text-align: left;
+    background-color: lightgreen;
+}
+
+.time {
+    font-size: smaller;
+    float: right;
+}

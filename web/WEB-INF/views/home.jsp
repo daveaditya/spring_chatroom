@@ -4,6 +4,10 @@
 <html>
 <head>
     <title>Home</title>
+    <!-- StyleSheets -->
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/app.css">
+
+    <!-- JavaScripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -51,7 +55,7 @@
         <div id="messagebox"
              style="height: 80%; text-align: center; padding: 10px; margin-bottom: 10px; overflow: auto; border: dotted #999999 2px"></div>
 
-        <div id="sendmessage" style="border: dotted blanchedalmond 2px; height: 15%; width: 100%">
+        <div id="sendmessage" style="height: 15%; width: 100%">
             <input id="message" name="message" placeholder="Enter message to send..."
                    style="width: 90%; height: 100px; border: 1px solid #999999; padding: 5px; background-color: gainsboro;">
             <button type="button" onclick="return sendMessage();" style="height: 100px; width: 9%; margin: 2px;">Send</button>

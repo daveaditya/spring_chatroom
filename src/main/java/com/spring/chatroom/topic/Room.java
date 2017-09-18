@@ -66,7 +66,7 @@ public class Room {
         response.setMessage(new Message(
                         this.roomName,
                         viewer.getViewerName() + " has joined the room",
-                        new SimpleDateFormat("HH:mm").format(new Date())
+                new SimpleDateFormat("HH:mm:ss").format(new Date())
                 )
         );
         sendExcept(viewer, response);
@@ -94,7 +94,7 @@ public class Room {
             Message msg = new Message();
             msg.setFrom(roomName);
             msg.setMessage(toRemove.getViewerName() + " left the room.");
-            msg.setTime(new SimpleDateFormat("HH:mm").format(new Date()));
+            msg.setTime(new SimpleDateFormat("HH:mm:ss").format(new Date()));
             response.setResponseCode(ResponseCode.SOMEONE_LEFT.getCode());
             response.setResponseDesc(ResponseCode.SOMEONE_LEFT.getDescription());
             response.setMessage(msg);
@@ -119,9 +119,9 @@ public class Room {
             @Override
             public void run() {
                 try {
-                    for (Viewer person : peopleInRoom.values()) {
-                        if (!person.getSessionId().equalsIgnoreCase(exception.getSessionId())) {
-                            person.sendMessage(GSON.toJson(response));
+                    for (Viewer viewer : peopleInRoom.values()) {
+                        if (!viewer.getSessionId().equalsIgnoreCase(exception.getSessionId())) {
+                            viewer.sendMessage(GSON.toJson(response));
                         }
                     }
                 } catch (IOException exc) {
@@ -157,8 +157,8 @@ public class Room {
             @Override
             public void run() {
                 try {
-                    for (Viewer person : getViewers()) {
-                        person.sendMessage(GSON.toJson(response));
+                    for (Viewer viewer : getViewers()) {
+                        viewer.sendMessage(GSON.toJson(response));
                     }
                 } catch (IOException exc) {
                     exc.printStackTrace();

@@ -2,7 +2,7 @@ var contextPath;
 var roomName;
 var subscribeTo;
 var nickname;
-var sessionId;
+var sessionId = null;
 var webSocket;
 
 
@@ -18,7 +18,7 @@ function signIn() {
         $('#nickname').css({"border": '#FF0000 1px solid'});
         error = true;
     } else {
-        $('#nickname').css({"border": 'initial'});
+        $('#nickname').css({"border": '#000000 1px solid'});
     }
 
     roomName = document.getElementById('roomname').value;
@@ -31,7 +31,7 @@ function signIn() {
             $('#newroomname').css({"border": '#FF0000 1px solid'});
             error = true;
         } else {
-            $('#newroomname').css({"border": 'initial'});
+            $('#newroomname').css({"border": '#000000 1px solid'});
         }
     } else {
         $('#roomname').css({"border": 'initial'});
@@ -39,9 +39,9 @@ function signIn() {
 
     if (!error) {
         subscribeTo = "/" + roomName + "/messages";
-        $('#nickname').css("all: initial;");
-        $('#roomname').css("all: initial;");
-        $('#newroomname').css("all: initial;");
+        $('#nickname').css("border: #000000 1px solid;");
+        $('#roomname').css("border: #000000 1px solid;");
+        $('#newroomname').css("border: #000000 1px solid;");
         connect();
     }
 }
@@ -152,11 +152,11 @@ function sendMessage() {
         $('#message').css({"border": '#FF0000 1px solid'});
         error = true;
     } else {
-        $('#message').css({"border": 'initial'});
+        $('#message').css({"border": '#000000 1px solid'});
     }
 
     if (!error) {
-        $('#message').css("all: initial;");
+        var date = new Date();
         var msgToSend = JSON.stringify({
             action: "sendMessage",
             roomName: roomName,
@@ -164,7 +164,7 @@ function sendMessage() {
             message: {
                 from: nickname,
                 message: msg,
-                time: Date.now()
+                time: date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
             }
         });
         console.log("SENDING: " + msgToSend);
@@ -180,10 +180,31 @@ function sendMessage() {
  */
 function showMessage(jsonResponse) {
     var msg = jsonResponse.message;
+    var style = '';
+
+    // If someone joined the room
+    if (jsonResponse.responseCode === 202) {
+        style += 'background-color: #f9ff93;';
+        // If someone left the room
+    } else if (jsonResponse.responseCode === 205) {
+        style += 'background-color: #ff885e;'
+    }
+
+
     if (msg.from === roomName) {
-        $('#messagebox').append("<span style='display: inline-block;'>" + msg.from + ": " + msg.message + " " + msg.time + "</span><br>");
+        $('#messagebox').append("<span class='roomMsg' style='" + style + "'>" + msg.from + ": " + msg.message + " " + msg.time + "</span><br>");
     } else {
-        $('#messagebox').append("<div style='text-align: left;'>" + msg.from + ": " + msg.message + " " + msg.time + "</div>");
+        var from = msg.from;
+        var fromContainer = 'container';
+        var fromClass = 'from';
+        var fromMsgClass = 'msg';
+        if (from === nickname) {
+            from = 'You';
+            fromClass = 'my-from';
+            fromMsgClass = 'my-msg';
+            fromContainer = 'my-container';
+        }
+        $('#messagebox').append('<div class="' + fromContainer + '"><span class="' + fromClass + '">' + from + '</span><br><div class="' + fromMsgClass + '">' + msg.message + '</div><span class="time">' + msg.time + '</span><br></div>');
     }
 }
 
