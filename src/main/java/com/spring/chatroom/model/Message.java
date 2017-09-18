@@ -6,13 +6,13 @@ public class Message {
 
     private String from;
 
-    private String message;
+    private Object message;
 
     private String time;
 
     public Message() { }
 
-    public Message(String from, String message, String time) {
+    public Message(String from, Object message, String time) {
         this.from = from;
         this.message = message;
         this.time = time;
@@ -26,11 +26,11 @@ public class Message {
         this.from = from;
     }
 
-    public String getMessage() {
+    public Object getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(Object message) {
         this.message = message;
     }
 

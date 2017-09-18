@@ -12,7 +12,11 @@ public enum ResponseCode {
     LEFT_UNSUCCESSFUL(204, "Failed"),
     SOMEONE_LEFT(205, "Someone Left"),
     MESSAGE_RECEIVED(210, "Message Received"),
-    FORWARD_MESSAGE(211, "Message Forwarded");
+    FORWARD_MESSAGE(211, "Message Forwarded"),
+    MEMBER_LIST(220, "Members List"),
+    EMPTY_ROOM(221, "Room is empty"),
+    ROOM_LIST(230, "Rooms List"),
+    NO_ROOMS(231, "No More Rooms");
 
     int code;
     String description;

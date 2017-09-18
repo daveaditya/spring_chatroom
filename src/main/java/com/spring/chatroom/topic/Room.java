@@ -3,6 +3,7 @@ package com.spring.chatroom.topic;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spring.chatroom.model.Message;
+import com.spring.chatroom.model.Request;
 import com.spring.chatroom.model.Response;
 import com.spring.chatroom.model.ResponseCode;
 import org.slf4j.Logger;
@@ -10,8 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,9 +26,9 @@ public class Room {
     private static final Logger LOGGER = LoggerFactory.getLogger(Room.class);
     private final Gson GSON = new GsonBuilder().create();
     private final ConcurrentMap<String, Viewer> peopleInRoom = new ConcurrentHashMap<>();
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss");
 
     private final String roomName;
-
 
     public Room(final String roomName) {
         this.roomName = roomName;
@@ -41,6 +44,42 @@ public class Room {
 
     public Collection<Viewer> getViewers() {
         return peopleInRoom.values();
+    }
+
+
+    /**
+     * Returns whether the room is empty or not
+     *
+     * @return
+     */
+    private boolean isRoomEmpty(String sessionId) {
+        return peopleInRoom.get(sessionId) != null && peopleInRoom.size() == 1;
+    }
+
+
+    /**
+     * Returns the number of members present in room
+     *
+     * @return
+     */
+    private int getRoomSize() {
+        return peopleInRoom.size();
+    }
+
+
+    /**
+     * Returns a list containing the name of members in the room
+     *
+     * @return
+     */
+    private List<String> getMembersListExcept(Viewer exception) {
+        List<String> members = new ArrayList<>();
+        for (Viewer v : getViewers()) {
+            if (!exception.getSessionId().equalsIgnoreCase(v.getSessionId())) {
+                members.add(v.getViewerName());
+            }
+        }
+        return members;
     }
 
 
@@ -66,7 +105,7 @@ public class Room {
         response.setMessage(new Message(
                         this.roomName,
                         viewer.getViewerName() + " has joined the room",
-                new SimpleDateFormat("HH:mm:ss").format(new Date())
+                DATE_FORMATTER.format(new Date())
                 )
         );
         sendExcept(viewer, response);
@@ -91,13 +130,15 @@ public class Room {
             toRemove.close();
 
             // Notify others of viewer removal
-            Message msg = new Message();
-            msg.setFrom(roomName);
-            msg.setMessage(toRemove.getViewerName() + " left the room.");
-            msg.setTime(new SimpleDateFormat("HH:mm:ss").format(new Date()));
             response.setResponseCode(ResponseCode.SOMEONE_LEFT.getCode());
             response.setResponseDesc(ResponseCode.SOMEONE_LEFT.getDescription());
-            response.setMessage(msg);
+            response.setMessage(
+                    new Message(
+                            roomName,
+                            toRemove.getViewerName() + " left the room.",
+                            DATE_FORMATTER.format(new Date())
+                    )
+            );
             sendToAll(response);
         } else {
 
@@ -110,11 +151,61 @@ public class Room {
 
 
     /**
+     * Acknoledges the received message. And forwards the message to
+     * others in the same room
+     *
+     * @param request
+     * @param viewer
+     */
+    public void sendMessage(Request request, Viewer viewer) {
+        // Acknowledge message received
+        Response response = new Response();
+        response.setResponseCode(ResponseCode.MESSAGE_RECEIVED.getCode());
+        response.setSessionId(viewer.getSessionId());
+        response.setResponseDesc(ResponseCode.MESSAGE_RECEIVED.getDescription());
+        response.setMessage(request.getMessage());
+        sendTo(viewer, response);
+
+        // Forward message to others
+        response.setResponseCode(ResponseCode.FORWARD_MESSAGE.getCode());
+        response.setResponseDesc(ResponseCode.FORWARD_MESSAGE.getDescription());
+        sendExcept(viewer, response);
+    }
+
+
+    /**
+     * Sends a list of current room members in the room
+     *
+     * @param viewer who requested for member list
+     */
+    public void viewMembers(Viewer viewer) {
+        Response response = new Response();
+        if (isRoomEmpty(viewer.getSessionId())) {
+            response.setResponseCode(ResponseCode.EMPTY_ROOM.getCode());
+            response.setResponseDesc(ResponseCode.EMPTY_ROOM.getDescription());
+            response.setSessionId(viewer.getSessionId());
+        } else {
+            response.setResponseCode(ResponseCode.MEMBER_LIST.getCode());
+            response.setResponseDesc(ResponseCode.MEMBER_LIST.getDescription());
+            response.setSessionId(viewer.getSessionId());
+            response.setMessage(
+                    new Message(
+                            roomName,
+                            getMembersListExcept(viewer),
+                            DATE_FORMATTER.format(new Date())
+                    )
+            );
+        }
+        sendTo(viewer, response);
+    }
+
+
+    /**
      * Sends the provided response to everyone in room except the given one
      *
      * @param exception
      */
-    public void sendExcept(Viewer exception, Response response) {
+    private void sendExcept(Viewer exception, Response response) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -152,7 +243,7 @@ public class Room {
      *
      * @param response
      */
-    public void sendToAll(Response response) {
+    private void sendToAll(Response response) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

@@ -49,7 +49,10 @@
 
     <div id="chatbox" style="padding-top: 10px; height: 100%">
 
-        Welcome to, <span id="inroomname"></span><span style="float: right"><a id="disconnect" onclick="disconnect()">Disconnect</a></span>
+        Welcome to, <span id="inroomname"></span><span style="float: right">
+        <a id="viewrooms" onclick="viewRooms()">View Rooms</a> |
+        <a id="viewmembers" onclick="viewMembers()">View Members</a> | <a id="disconnect" onclick="disconnect()">Disconnect</a>
+    </span>
         <br><br>
 
         <div id="messagebox"

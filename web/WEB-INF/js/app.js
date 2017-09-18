@@ -81,42 +81,61 @@ function connect() {
 
         console.log("GOT ... " + msg.data + " ||| type ... " + typeof msg.data);
         var response = JSON.parse(msg.data);
+        // noinspection JSUnresolvedVariable
+        var responseCode = response.responseCode;
         // Handling based on Response Code
 
         // 200 - JOINED SUCCESSFULLY
-        if (response.responseCode === 200) {
+        if (responseCode === 200) {
             sessionId = response.sessionId;
             console.log("CONNECTED : SESSION ... " + sessionId);
             onConnected();
 
             // 201 - JOIN FAILED - Todo
-        } else if (response.responseCode === 201) {
+        } else if (responseCode === 201) {
             alert("Cannot join the specified room.");
 
             // 202 - Someone Joined
-        } else if (response.responseCode === 202) {
-            showMessage(response);
+        } else if (responseCode === 202) {
+            showMessage(responseCode, response);
 
             // 203 - Left Successfully 'Viewer left room'
-        } else if (response.responseCode === 203) {
+        } else if (responseCode === 203) {
             pageLoad(contextPath);
 
             // 204 - Left failed - Todo
-        } else if (response.responseCode === 204) {
+        } else if (responseCode === 204) {
             alert("Cannot leave room!");
 
             // 205 - Someone has left the room
-        } else if (response.responseCode === 205) {
-            showMessage(response);
+        } else if (responseCode === 205) {
+            showMessage(responseCode, response);
 
             // 210 - Message Received 'by server'
-        } else if (response.responseCode === 210) {
-            showMessage(response);
+        } else if (responseCode === 210) {
+            showMessage(responseCode, response);
 
             // 211 - Message Forwarded 'Message available in room'
-        } else if (response.responseCode === 211) {
-            showMessage(response);
+        } else if (responseCode === 211) {
+            showMessage(responseCode, response);
 
+            // 220 - Other members of group
+        } else if (responseCode === 220) {
+            showMessage(responseCode, response);
+
+            // 221 - Empty Room 'current room is empty'
+        } else if (responseCode === 221) {
+            showMessage(responseCode, response);
+
+            // 230 - Room list
+        } else if (responseCode === 230) {
+            showMessage(responseCode, response);
+
+            // 231 - No rooms except current
+        } else if (responseCode === 231) {
+            showMessage(responseCode, response);
+
+            // On other response codes
         } else {
             console.log("UNDEFINED -- GOT: ... " + msg.data);
         }
@@ -160,6 +179,7 @@ function sendMessage() {
         var msgToSend = JSON.stringify({
             action: "sendMessage",
             roomName: roomName,
+            nickName: nickname,
             sessionId: sessionId,
             message: {
                 from: nickname,
@@ -169,30 +189,86 @@ function sendMessage() {
         });
         console.log("SENDING: " + msgToSend);
         webSocket.send(msgToSend);
+        $('#message').val('');
     }
 
 }
 
 
 /**
+ * Displays the other members present in the room
+ */
+function viewMembers() {
+    var requestToSend = JSON.stringify({
+        action: "viewMembers",
+        nickName: nickname,
+        sessionId: sessionId,
+        roomName: roomName,
+        message: null
+    });
+    console.log("SENDING ... " + requestToSend);
+    webSocket.send(requestToSend);
+}
+
+
+/**
+ * Displays the other rooms present
+ */
+function viewRooms() {
+    var requestToSend = JSON.stringify({
+        action: "viewRooms",
+        nickName: nickname,
+        sessionId: sessionId,
+        roomName: roomName,
+        message: null
+    });
+    console.log("SENDING ... " + requestToSend);
+    webSocket.send(requestToSend);
+}
+
+
+/**
  * Displays the obtained message
+ * @param responseCode int indicating the response of server
  * @param jsonResponse json object containing message to display
  */
-function showMessage(jsonResponse) {
+function showMessage(responseCode, jsonResponse) {
     var msg = jsonResponse.message;
-    var style = '';
+    var str = '';
 
     // If someone joined the room
-    if (jsonResponse.responseCode === 202) {
-        style += 'background-color: #f9ff93;';
+    if (responseCode === 202) {
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #f9ff93;'>" + msg.from + " ... " + msg.message + " on " + msg.time + "</span><br>");
+
         // If someone left the room
-    } else if (jsonResponse.responseCode === 205) {
-        style += 'background-color: #ff885e;'
-    }
+    } else if (responseCode === 205) {
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #ff885e;'>" + msg.from + " ... " + msg.message + " on " + msg.time + "</span><br>");
 
+        // If response contains member list
+    } else if (responseCode === 220) {
+        str = roomName + " contains " + msg.message.length + " member(s)<br><br>";
+        msg.message.forEach(function (item) {
+            str += item + "<br>";
+        });
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #b1c0d8;'>" + str + " <br>as of " + msg.time + "</span><br>");
 
-    if (msg.from === roomName) {
-        $('#messagebox').append("<span class='roomMsg' style='" + style + "'>" + msg.from + ": " + msg.message + " " + msg.time + "</span><br>");
+        // If any other message occurs
+    } else if (responseCode === 221) {
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #b1c0d8;'>You are the only member of " + roomName + " room.</span><br>");
+
+        // If response contains room list
+    } else if (responseCode === 230) {
+        str = "There are " + msg.message.length + " active room(s)<br><br>";
+        msg.message.forEach(function (item) {
+            str += item + "<br>";
+        });
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #9ae2b2;'>" + str + " <br>as of " + msg.time + "</span><br>");
+
+        // If any other message occurs
+    } else if (responseCode === 231) {
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #9ae2b2;'>This is the only room active</span><br>");
+
+        // If any other message occurs
     } else {
         var from = msg.from;
         var fromContainer = 'container';
