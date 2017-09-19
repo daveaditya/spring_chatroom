@@ -50,6 +50,7 @@
     <div id="chatbox" style="padding-top: 10px; height: 100%">
 
         Welcome to, <span id="inroomname"></span><span style="float: right">
+        <a id="myRooms" onclick="myRooms()">My Rooms</a> |
         <a id="viewrooms" onclick="viewRooms()">View Rooms</a> |
         <a id="viewmembers" onclick="viewMembers()">View Members</a> | <a id="disconnect"
                                                                           onclick="localStorage.removeItem('sessionId'); disconnect();">Disconnect</a>

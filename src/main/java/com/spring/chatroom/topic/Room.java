@@ -32,6 +32,8 @@ public class Room {
 
     private final String roomName;
 
+    private Long memberCount = 0L;
+
     public Room(final String roomName) {
         this.roomName = roomName;
     }
@@ -40,12 +42,26 @@ public class Room {
         return roomName;
     }
 
+    public boolean isViewerPresent(String sessionId) {
+        return peopleInRoom.containsKey(sessionId);
+    }
+
     public Viewer getViewerBySId(String sessionId) {
         return peopleInRoom.get(sessionId);
     }
 
     public Collection<Viewer> getViewers() {
         return peopleInRoom.values();
+    }
+
+
+    private synchronized void incrementMemberCount() {
+        memberCount++;
+    }
+
+
+    private synchronized void decrementMemberCount() {
+        memberCount--;
     }
 
 
@@ -102,7 +118,7 @@ public class Room {
      * @param request
      * @param session
      */
-    public void addViewer(Request request, WebSocketSession session) {
+    public boolean addViewer(Request request, WebSocketSession session) {
 
         Response response = new Response();
 
@@ -113,12 +129,13 @@ public class Room {
             response.setResponseCode(ResponseCode.ALREADY_JOINED.getCode());
             response.setResponseDesc(ResponseCode.ALREADY_JOINED.getDescription());
             response.setSessionId(request.getSessionId());
+            response.setjSessionId(session.getAttributes().getOrDefault("HTTP.SESSION.ID", null).toString());
             try {
                 session.sendMessage(new TextMessage(GSON.toJson(response)));
             } catch (IOException exc) {
                 exc.printStackTrace();
             }
-            return;
+            return false;
         }
 
         Viewer viewer = new Viewer(request.getNickName(), session);
@@ -129,7 +146,10 @@ public class Room {
         response.setResponseCode(ResponseCode.JOIN_SUCCESSFUL.getCode());
         response.setResponseDesc(ResponseCode.JOIN_SUCCESSFUL.getDescription());
         response.setSessionId(viewer.getSessionId());
+        response.setjSessionId(session.getAttributes().getOrDefault("HTTP.SESSION.ID", null).toString());
         sendTo(viewer, response);
+
+        incrementMemberCount();
 
         // notify others of viewer join
         response.setResponseCode(ResponseCode.SOMEONE_JOINED.getCode());
@@ -141,6 +161,7 @@ public class Room {
                 )
         );
         sendExcept(viewer, response);
+        return true;
     }
 
 
@@ -149,7 +170,7 @@ public class Room {
      *
      * @param sessionId
      */
-    public void removeViewer(String sessionId) {
+    public boolean removeViewer(String sessionId) {
         Viewer toRemove = peopleInRoom.remove(sessionId);
         Response response = new Response();
 
@@ -160,6 +181,8 @@ public class Room {
             response.setSessionId(sessionId);
             sendTo(toRemove, response);
             toRemove.close();
+
+            decrementMemberCount();
 
             // Notify others of viewer removal
             response.setResponseCode(ResponseCode.SOMEONE_LEFT.getCode());
@@ -172,12 +195,13 @@ public class Room {
                     )
             );
             sendToAll(response);
+            return true;
         } else {
-
             // notify viewer of left failed
             response.setResponseCode(ResponseCode.LEFT_UNSUCCESSFUL.getCode());
             response.setResponseDesc(ResponseCode.LEFT_UNSUCCESSFUL.getDescription());
             sendTo(getViewerBySId(sessionId), response);
+            return false;
         }
     }
 

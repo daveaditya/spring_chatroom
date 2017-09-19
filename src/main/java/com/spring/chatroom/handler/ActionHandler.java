@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.spring.chatroom.model.Request;
 import com.spring.chatroom.model.RequestCode;
-import com.spring.chatroom.topic.Room;
 import com.spring.chatroom.topic.RoomManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,6 @@ public class ActionHandler extends TextWebSocketHandler {
     @Autowired
     private RoomManager roomManager;
 
-
     // Maps different request actions
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -33,19 +31,22 @@ public class ActionHandler extends TextWebSocketHandler {
             Request request = GSON.fromJson(message.getPayload(), Request.class);
             switch (RequestCode.fromAction(request.getAction())) {
                 case JOIN_ROOM:
-                    joinRoom(request, session);
+                    roomManager.joinRoom(request, session);
                     break;
                 case LEAVE_ROOM:
-                    leaveRoom(request, session);
+                    roomManager.leaveRoom(request, session);
                     break;
                 case SEND_MESSAGE:
-                    sendMessage(request, session);
+                    roomManager.sendMessage(request, session);
                     break;
                 case VIEW_MEMBERS:
-                    viewMembers(request, session);
+                    roomManager.viewMembers(request, session);
                     break;
                 case VIEW_ROOMS:
-                    viewRooms(request, session);
+                    roomManager.viewRooms(request, session);
+                    break;
+                case MY_ROOMS:
+                    roomManager.yourRooms(request, session);
                     break;
                 default:
                     // Show error
@@ -55,46 +56,6 @@ public class ActionHandler extends TextWebSocketHandler {
         } catch (JsonSyntaxException exc) {
             exc.printStackTrace();
         }
-    }
-
-
-    // Methods to handle different actions
-
-    // Add member to room
-    private void joinRoom(Request request, WebSocketSession session) {
-        roomManager.getRoomByName(request.getRoomName()).addViewer(request, session);
-    }
-
-
-    // Rejoins the room if already joined
-    private void rejoinRoom(Request request, WebSocketSession session) {
-
-    }
-
-
-    // Removes the member from room
-    private void leaveRoom(Request request, WebSocketSession session) {
-        roomManager.getRoomByName(request.getRoomName()).removeViewer(session.getId());
-    }
-
-
-    // Sends 'message received' response and broadcasts the message
-    private void sendMessage(Request request, WebSocketSession session) {
-        Room room = roomManager.getRoomByName(request.getRoomName());
-        room.sendMessage(request, room.getViewerBySId(session.getId()));
-    }
-
-
-    // Sends the current room members to the requesting viewer
-    private void viewMembers(Request request, WebSocketSession session) {
-        Room room = roomManager.getRoomByName(request.getRoomName());
-        room.viewMembers(room.getViewerBySId(session.getId()));
-    }
-
-
-    // Sends the other ongoing rooms to the requesting viewer
-    private void viewRooms(Request request, WebSocketSession session) {
-        roomManager.viewRooms(request.getRoomName(), roomManager.getRoomByName(request.getRoomName()).getViewerBySId(session.getId()));
     }
 
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 public class Viewer implements AutoCloseable {
 
     private String viewerName;
+    private String jSessionId;
     private WebSocketSession wbSession;
 
     public Viewer(String viewerName, WebSocketSession wbSession) {
@@ -24,6 +25,14 @@ public class Viewer implements AutoCloseable {
 
     public void setViewerName(String viewerName) {
         this.viewerName = viewerName;
+    }
+
+    public String getjSessionId() {
+        return jSessionId;
+    }
+
+    public void setjSessionId(String jSessionId) {
+        this.jSessionId = jSessionId;
     }
 
     public String getSessionId() {
@@ -40,6 +49,15 @@ public class Viewer implements AutoCloseable {
 
     public void sendMessage(String msg) throws IOException {
         this.wbSession.sendMessage(new TextMessage(msg));
+    }
+
+    @Override
+    public String toString() {
+        return "Viewer{" +
+                "viewerName='" + viewerName + '\'' +
+                ", jSessionId='" + jSessionId + '\'' +
+                ", wbSession=" + wbSession +
+                '}';
     }
 
     @Override

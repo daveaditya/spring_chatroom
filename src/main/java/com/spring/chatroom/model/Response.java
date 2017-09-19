@@ -5,8 +5,13 @@ package com.spring.chatroom.model;
 public class Response {
 
     private int responseCode;
+
     private String responseDesc;
+
     private String sessionId;
+
+    private String jSessionId;
+
     private Message message;
 
     public int getResponseCode() {
@@ -33,6 +38,14 @@ public class Response {
         this.sessionId = sessionId;
     }
 
+    public String getjSessionId() {
+        return jSessionId;
+    }
+
+    public void setjSessionId(String jSessionId) {
+        this.jSessionId = jSessionId;
+    }
+
     public Message getMessage() {
         return message;
     }
@@ -47,6 +60,7 @@ public class Response {
                 "responseCode=" + responseCode +
                 ", responseDesc='" + responseDesc + '\'' +
                 ", sessionId='" + sessionId + '\'' +
+                ", jSessionId='" + jSessionId + '\'' +
                 ", message=" + message +
                 '}';
     }

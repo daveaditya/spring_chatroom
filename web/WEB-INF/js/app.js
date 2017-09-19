@@ -3,10 +3,10 @@ var roomName;
 var subscribeTo;
 var nickname;
 var sessionId = null;
+var jSessionId = null;
 var webSocket;
 
 // Todo: Implement Spring Security
-// Todo: MyRooms request implementation
 
 /**
  * Perform validation and send request to server
@@ -67,6 +67,7 @@ function connect() {
                 roomName: roomName,
                 nickName: nickname,
                 sessionId: sessionId,
+                jSessionId: jSessionId,
                 message: null
             });
             console.log("SENDING: " + requestToSend);
@@ -91,9 +92,12 @@ function connect() {
         // 200 - JOINED SUCCESSFULLY
         if (responseCode === 200) {
             sessionId = response.sessionId;
+            jSessionId = response.jSessionId;
             // Store the session id in local storage
             localStorage.setItem('sessionId', sessionId);
-            console.log("CONNECTED : SESSION ... " + sessionId);
+            localStorage.setItem('jSessionId', jSessionId);
+
+            console.log("CONNECTED : SESSION ... " + sessionId + " ... " + jSessionId);
             onConnected();
 
             // 201 - JOIN FAILED - Todo
@@ -144,6 +148,10 @@ function connect() {
         } else if (responseCode === 231) {
             showMessage(responseCode, response);
 
+            // 232 - Your rooms list
+        } else if (responseCode === 232) {
+            showMessage(responseCode, response);
+
             // On other response codes
         } else {
             console.log("UNDEFINED -- GOT: ... " + msg.data);
@@ -190,6 +198,7 @@ function sendMessage() {
             roomName: roomName,
             nickName: nickname,
             sessionId: sessionId,
+            jSessionId: jSessionId,
             message: {
                 from: nickname,
                 message: msg,
@@ -211,8 +220,9 @@ function viewMembers() {
     var requestToSend = JSON.stringify({
         action: "viewMembers",
         nickName: nickname,
-        sessionId: sessionId,
         roomName: roomName,
+        sessionId: sessionId,
+        jSessionId: jSessionId,
         message: null
     });
     console.log("SENDING ... " + requestToSend);
@@ -227,8 +237,26 @@ function viewRooms() {
     var requestToSend = JSON.stringify({
         action: "viewRooms",
         nickName: nickname,
-        sessionId: sessionId,
         roomName: roomName,
+        sessionId: sessionId,
+        jSessionId: jSessionId,
+        message: null
+    });
+    console.log("SENDING ... " + requestToSend);
+    webSocket.send(requestToSend);
+}
+
+
+/**
+ * Displays the list of rooms the user is present in
+ */
+function myRooms() {
+    var requestToSend = JSON.stringify({
+        action: "myRooms",
+        nickName: nickname,
+        roomName: roomName,
+        sessionId: sessionId,
+        jSessionId: jSessionId,
         message: null
     });
     console.log("SENDING ... " + requestToSend);
@@ -277,6 +305,14 @@ function showMessage(responseCode, jsonResponse) {
     } else if (responseCode === 231) {
         $('#messagebox').append("<span class='roomMsg' style='background-color: #9ae2b2;'>This is the only room active</span><br>");
 
+        // If list of user's rooms is returned
+    } else if (responseCode === 232) {
+        str = "You are active in " + msg.message.length + " room(s)<br><br>";
+        msg.message.forEach(function (item) {
+            str += item + "<br>";
+        });
+        $('#messagebox').append("<span class='roomMsg' style='background-color: #d1b1ff;'>" + str + " <br>as of " + msg.time + "</span><br>");
+
         // If any other message occurs
     } else {
         var from = msg.from;
@@ -315,6 +351,7 @@ function showInputIfOther(value) {
 function pageLoad(path) {
     // fetch session id from local storage
     sessionId = localStorage.getItem('sessionId');
+    jSessionId = localStorage.getItem('jSessionId');
 
     contextPath = path;
     $('#signin').show();
@@ -339,6 +376,7 @@ function disconnect() {
             roomName: roomName,
             nickName: nickname,
             sessionId: sessionId,
+            jSessionId: jSessionId,
             message: null
         });
         console.log("SENDING: " + exitRequest);

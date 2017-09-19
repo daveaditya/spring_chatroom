@@ -20,7 +20,8 @@ public enum ResponseCode {
     MEMBER_LIST(220, "Members List"),
     EMPTY_ROOM(221, "Room is empty"),
     ROOM_LIST(230, "Rooms List"),
-    NO_ROOMS(231, "No More Rooms");
+    NO_ROOMS(231, "No More Rooms"),
+    YOUR_ROOM_LIST(232, "Rooms in viewer is present");
 
     int code;
     String description;

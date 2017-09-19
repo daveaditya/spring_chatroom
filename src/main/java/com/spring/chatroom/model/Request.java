@@ -12,6 +12,8 @@ public class Request {
 
     private String sessionId;
 
+    private String jSessionId;
+
     private Message message;
 
     public String getAction() {
@@ -46,6 +48,14 @@ public class Request {
         this.sessionId = sessionId;
     }
 
+    public String getjSessionId() {
+        return jSessionId;
+    }
+
+    public void setjSessionId(String jSessionId) {
+        this.jSessionId = jSessionId;
+    }
+
     public Message getMessage() {
         return message;
     }
@@ -61,6 +71,7 @@ public class Request {
                 ", roomName='" + roomName + '\'' +
                 ", nickName='" + nickName + '\'' +
                 ", sessionId='" + sessionId + '\'' +
+                ", jSessionId='" + jSessionId + '\'' +
                 ", message=" + message +
                 '}';
     }

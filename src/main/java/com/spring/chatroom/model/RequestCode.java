@@ -10,7 +10,8 @@ public enum RequestCode {
     LEAVE_ROOM("leaveRoom"),
     SEND_MESSAGE("sendMessage"),
     VIEW_MEMBERS("viewMembers"),
-    VIEW_ROOMS("viewRooms");
+    VIEW_ROOMS("viewRooms"),
+    MY_ROOMS("myRooms");
 
     String requestCode;
 
@@ -30,6 +31,8 @@ public enum RequestCode {
                 return VIEW_MEMBERS;
             case "viewRooms":
                 return VIEW_ROOMS;
+            case "myRooms":
+                return MY_ROOMS;
             default:
                 throw new EnumConstantNotPresentException(RequestCode.class, "Not present: " + action);
         }
