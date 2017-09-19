@@ -1,6 +1,9 @@
 package com.spring.chatroom.model;
 
 
+/**
+ * Constants denoting the Response Codes and their descriptions.
+ */
 @SuppressWarnings({"unused"})
 public enum ResponseCode {
 
@@ -11,6 +14,7 @@ public enum ResponseCode {
     LEFT_SUCCESSFULLY(203, "Left Successfully"),
     LEFT_UNSUCCESSFUL(204, "Failed"),
     SOMEONE_LEFT(205, "Someone Left"),
+    ALREADY_JOINED(206, "Room already joined!"),
     MESSAGE_RECEIVED(210, "Message Received"),
     FORWARD_MESSAGE(211, "Message Forwarded"),
     MEMBER_LIST(220, "Members List"),

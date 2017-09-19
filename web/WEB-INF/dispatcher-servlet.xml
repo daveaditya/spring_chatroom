@@ -24,4 +24,11 @@
         <property name="suffix" value=".jsp" />
     </bean>
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/app/chat"/>
+            <bean class="com.spring.chatroom.handler.ActionInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
 </beans>

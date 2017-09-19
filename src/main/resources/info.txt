@@ -13,6 +13,12 @@ joinRoom
     -> Return
         -- Status Message
 
+rejoinRoom
+    -> Data
+        -- sessionId
+    -> Return
+        -- Status Message
+
 viewMembers
     -> Data
         -- roomName
@@ -35,6 +41,12 @@ sendMessage
     -> Return
         -- Status + Updated view
 
+
+myRooms
+    -> Data
+        -- all
+    -> Return
+        -- Status + List of rooms the user is present in
 
 
 *****
@@ -65,3 +77,32 @@ Join Room:
 }
 
 *****
+
+
+
+
+rejoinRoom
+
+Current State of Room
+
+	test 1		 ---		session		--- 	sessionid-0
+	test 2		---			session 	--- 	sessionid-1
+
+
+rejoinRoom - test 1
+
+	check if sessionId passed in request already exists or not
+	if not present:
+		perform joinRoom as regular
+	else:
+		retrieve the Viewer, and hence the session
+
+
+Techniques
+
+1. Close the previous session and link user with new sesssion	-- 	easy(backup)
+
+2. link the user with previous session 		-- 	tough
+
+3. the user is already present in the room, based on his/her web socket session id.
+   don't allow him/her to get into it again.

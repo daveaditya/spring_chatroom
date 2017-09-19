@@ -7,7 +7,6 @@ import com.spring.chatroom.model.Request;
 import com.spring.chatroom.model.RequestCode;
 import com.spring.chatroom.topic.Room;
 import com.spring.chatroom.topic.RoomManager;
-import com.spring.chatroom.topic.Viewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +62,13 @@ public class ActionHandler extends TextWebSocketHandler {
 
     // Add member to room
     private void joinRoom(Request request, WebSocketSession session) {
-        Viewer newViewer = new Viewer(request.getNickName(), session);
-        roomManager.getRoomByName(request.getRoomName()).addViewer(newViewer);
+        roomManager.getRoomByName(request.getRoomName()).addViewer(request, session);
+    }
+
+
+    // Rejoins the room if already joined
+    private void rejoinRoom(Request request, WebSocketSession session) {
+
     }
 
 

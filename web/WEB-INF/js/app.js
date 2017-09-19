@@ -5,6 +5,8 @@ var nickname;
 var sessionId = null;
 var webSocket;
 
+// Todo: Implement Spring Security
+// Todo: MyRooms request implementation
 
 /**
  * Perform validation and send request to server
@@ -52,7 +54,7 @@ function signIn() {
  */
 function connect() {
 
-    webSocket = new WebSocket("ws://localhost:8080/app/chat");
+    webSocket = new WebSocket("ws://192.168.9.241:8080/app/chat");
 
     webSocket.onopen = function (event) {
         if (event === undefined) {
@@ -74,6 +76,7 @@ function connect() {
 
     webSocket.onclose = function () {
         console.log("SERVER CLOSED CONNECTION ...");
+        localStorage.clear();
         pageLoad(contextPath);
     };
 
@@ -88,6 +91,8 @@ function connect() {
         // 200 - JOINED SUCCESSFULLY
         if (responseCode === 200) {
             sessionId = response.sessionId;
+            // Store the session id in local storage
+            localStorage.setItem('sessionId', sessionId);
             console.log("CONNECTED : SESSION ... " + sessionId);
             onConnected();
 
@@ -110,6 +115,10 @@ function connect() {
             // 205 - Someone has left the room
         } else if (responseCode === 205) {
             showMessage(responseCode, response);
+
+            // 206 - Viewer has already joined the room in another tab
+        } else if (responseCode === 206) {
+            alert("You have already joined this room. Please try again after closing that window.");
 
             // 210 - Message Received 'by server'
         } else if (responseCode === 210) {
@@ -304,6 +313,9 @@ function showInputIfOther(value) {
  * @param path contextPath from for the app
  */
 function pageLoad(path) {
+    // fetch session id from local storage
+    sessionId = localStorage.getItem('sessionId');
+
     contextPath = path;
     $('#signin').show();
     $('#inputnewroom').hide();

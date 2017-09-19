@@ -8,6 +8,8 @@ import com.spring.chatroom.model.Response;
 import com.spring.chatroom.model.ResponseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -84,16 +86,46 @@ public class Room {
 
 
     /**
+     * Returns true if the viewer is already present in the room
+     *
+     * @param sessionId Session ID of the viewer, present in the request
+     * @return
+     */
+    private boolean hasAlreadyJoined(String sessionId) {
+        return getViewerBySId(sessionId) != null;
+    }
+
+
+    /**
      * Add viewer to current room
      *
-     * @param viewer
+     * @param request
+     * @param session
      */
-    public void addViewer(Viewer viewer) {
-        LOGGER.info("{} added to {} ... {}", viewer.getViewerName(), roomName, viewer.getSessionId());
+    public void addViewer(Request request, WebSocketSession session) {
+
+        Response response = new Response();
+
+        // Checks whether there is a viewer curresponding to the sessionId passed in request
+        // if it is not null
+        LOGGER.debug("ADD NEW ... " + request.toString());
+        if (request.getSessionId() != null && hasAlreadyJoined(request.getSessionId())) {
+            response.setResponseCode(ResponseCode.ALREADY_JOINED.getCode());
+            response.setResponseDesc(ResponseCode.ALREADY_JOINED.getDescription());
+            response.setSessionId(request.getSessionId());
+            try {
+                session.sendMessage(new TextMessage(GSON.toJson(response)));
+            } catch (IOException exc) {
+                exc.printStackTrace();
+            }
+            return;
+        }
+
+        Viewer viewer = new Viewer(request.getNickName(), session);
         peopleInRoom.put(viewer.getSessionId(), viewer);
+        LOGGER.info("{} added to {} ... {}", viewer.getViewerName(), roomName, viewer.getSessionId());
 
         // notify viewer of successful join
-        Response response = new Response();
         response.setResponseCode(ResponseCode.JOIN_SUCCESSFUL.getCode());
         response.setResponseDesc(ResponseCode.JOIN_SUCCESSFUL.getDescription());
         response.setSessionId(viewer.getSessionId());

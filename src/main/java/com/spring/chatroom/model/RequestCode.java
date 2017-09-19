@@ -1,6 +1,9 @@
 package com.spring.chatroom.model;
 
 
+/**
+ * Constants denoting the Request Codes.
+ */
 public enum RequestCode {
 
     JOIN_ROOM("joinRoom"),
