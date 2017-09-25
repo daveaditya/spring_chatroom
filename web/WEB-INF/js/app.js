@@ -54,7 +54,7 @@ function signIn() {
  */
 function connect() {
 
-    webSocket = new WebSocket("ws://192.168.9.241:8080/app/chat");
+    webSocket = new WebSocket("ws://localhost:8080/app/chat");
 
     webSocket.onopen = function (event) {
         if (event === undefined) {

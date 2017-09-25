@@ -13,6 +13,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+// Todo: Avoid session fixation
 
 @SuppressWarnings({"unused", "SpringAutowiredFieldsWarningInspection", "SpringJavaAutowiredMembersInspection"})
 public class ActionHandler extends TextWebSocketHandler {

@@ -1,4 +1,6 @@
 <%--suppress HtmlUnknownTarget --%>
+<%--suppress ELValidationInJSP --%>
+<%--suppress HtmlUnknownTarget --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -49,12 +51,15 @@
 
     <div id="chatbox" style="padding-top: 10px; height: 100%">
 
-        Welcome to, <span id="inroomname"></span><span style="float: right">
+        Welcome to, <span id="inroomname"></span>
+
+        <span style="float: right">
         <a id="myRooms" onclick="myRooms()">My Rooms</a> |
         <a id="viewrooms" onclick="viewRooms()">View Rooms</a> |
-        <a id="viewmembers" onclick="viewMembers()">View Members</a> | <a id="disconnect"
-                                                                          onclick="localStorage.removeItem('sessionId'); disconnect();">Disconnect</a>
-    </span>
+        <a id="viewmembers" onclick="viewMembers()">View Members</a> |
+        <a id="disconnect" onclick="localStorage.removeItem('sessionId'); disconnect();">Disconnect</a>
+        </span>
+
         <br><br>
 
         <div id="messagebox"

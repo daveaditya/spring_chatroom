@@ -14,8 +14,6 @@ public class ActionInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionInterceptor.class);
 
-    public static final String SESSION_FOR_USER = "SESSION_FOR_USER";
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         LOGGER.debug("FROM PREHANDLE()");

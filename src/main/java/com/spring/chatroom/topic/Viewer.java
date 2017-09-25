@@ -11,8 +11,11 @@ import java.io.IOException;
 public class Viewer implements AutoCloseable {
 
     private String viewerName;
+
     private String jSessionId;
+
     private WebSocketSession wbSession;
+
 
     public Viewer(String viewerName, WebSocketSession wbSession) {
         this.viewerName = viewerName;
