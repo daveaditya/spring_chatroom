@@ -4,6 +4,7 @@ import com.spring.chatroom.handler.ActionInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = "com.spring.chatroom")
+@Import(value = {SecurityConfig.class})
 public class SpringConfig extends WebMvcConfigurerAdapter {
 
     @Override
